@@ -107,8 +107,8 @@ internal sealed class DozyApplicationContext : ApplicationContext
     private void ShowFailure(bool enable)
     {
         ShowBalloon(enable
-            ? "Windows did not allow sleep prevention."
-            : "Windows did not allow normal sleep to be restored.");
+            ? "Windows did not allow keep-awake."
+            : "Windows did not allow normal power behavior to be restored.");
     }
 
     private void ShowBalloon(string message)

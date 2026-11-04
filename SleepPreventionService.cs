@@ -11,13 +11,14 @@ internal sealed class SleepPreventionService : IDisposable
 {
     private const uint ES_CONTINUOUS = 0x80000000u;
     private const uint ES_SYSTEM_REQUIRED = 0x00000001u;
+    private const uint ES_DISPLAY_REQUIRED = 0x00000002u;
 
     public bool IsEnabled { get; private set; }
 
     public bool TrySetEnabled(bool enabled)
     {
         uint flags = enabled
-            ? ES_CONTINUOUS | ES_SYSTEM_REQUIRED
+            ? ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
             : ES_CONTINUOUS;
 
         if (SetThreadExecutionState(flags) == 0)
