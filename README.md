@@ -3,7 +3,7 @@
 Tiny Windows 11 tray utility that toggles sleep prevention. No window, installer, service, or auto-start.
 
 - Left-click: toggle sleep prevention.
-- Right-click: `Turn ON` / `Turn OFF`, `Exit`.
+- Right-click: `Turn ON` / `Turn OFF`, `Start with Windows`, `Exit`.
 - Starts OFF. While ON, Windows will not idle-sleep, but the display can still turn off.
 
 ## Build

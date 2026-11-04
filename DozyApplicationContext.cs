@@ -6,24 +6,29 @@ internal sealed class DozyApplicationContext : ApplicationContext
     private const string OnToolTip = "Dozy: On";
 
     private readonly SleepPreventionService _sleep = new();
+    private readonly StartupRegistration _startup = new();
     private readonly TrayIconFactory _icons = new();
     private readonly ContextMenuStrip _menu;
     private readonly ToolStripMenuItem _toggleItem;
+    private readonly ToolStripMenuItem _startWithWindowsItem;
     private readonly NotifyIcon _notifyIcon;
     private bool _disposed;
 
     public DozyApplicationContext()
     {
         _toggleItem = new ToolStripMenuItem("Turn ON", null, (_, _) => Toggle());
+        _startWithWindowsItem = new ToolStripMenuItem("Start with Windows", null, (_, _) => ToggleStartWithWindows());
 
         _menu = new ContextMenuStrip
         {
             ShowImageMargin = false,
-            ShowCheckMargin = false
+            ShowCheckMargin = true
         };
         _menu.Items.Add(_toggleItem);
+        _menu.Items.Add(_startWithWindowsItem);
         _menu.Items.Add(new ToolStripSeparator());
         _menu.Items.Add(new ToolStripMenuItem("Exit", null, (_, _) => ExitApplication()));
+        _menu.Opening += (_, _) => ApplyStartupState();
 
         _notifyIcon = new NotifyIcon
         {
@@ -34,7 +39,9 @@ internal sealed class DozyApplicationContext : ApplicationContext
         };
         _notifyIcon.MouseClick += OnMouseClick;
 
+        _startup.RefreshIfEnabled();
         ApplyState();
+        ApplyStartupState();
     }
 
     protected override void Dispose(bool disposing)
@@ -77,12 +84,37 @@ internal sealed class DozyApplicationContext : ApplicationContext
         _toggleItem.Text = enabled ? "Turn OFF" : "Turn ON";
     }
 
+    private void ToggleStartWithWindows()
+    {
+        bool enable = !_startup.IsEnabled;
+
+        if (!_startup.TrySetEnabled(enable))
+        {
+            ShowBalloon(enable
+                ? "Could not enable Start with Windows."
+                : "Could not disable Start with Windows.");
+            return;
+        }
+
+        ApplyStartupState();
+    }
+
+    private void ApplyStartupState()
+    {
+        _startWithWindowsItem.Checked = _startup.IsEnabled;
+    }
+
     private void ShowFailure(bool enable)
     {
-        _notifyIcon.BalloonTipTitle = "Dozy";
-        _notifyIcon.BalloonTipText = enable
+        ShowBalloon(enable
             ? "Windows did not allow sleep prevention."
-            : "Windows did not allow normal sleep to be restored.";
+            : "Windows did not allow normal sleep to be restored.");
+    }
+
+    private void ShowBalloon(string message)
+    {
+        _notifyIcon.BalloonTipTitle = "Dozy";
+        _notifyIcon.BalloonTipText = message;
         _notifyIcon.BalloonTipIcon = ToolTipIcon.Warning;
         _notifyIcon.ShowBalloonTip(4000);
     }
