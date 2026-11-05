@@ -55,8 +55,8 @@ Publish a self-contained single file:
 
     dotnet publish Dozy.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false -o publish
 
-The result is `publish\Dozy.exe`. The binary is self-contained and unsigned,
-so SmartScreen may warn on first run.
+The result is publish\Dozy.exe. The binary is self-contained and unsigned, so
+SmartScreen may warn on first run.
 
 
 Files
